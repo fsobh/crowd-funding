@@ -94,7 +94,7 @@ task(
       if (taskArgs.args) {
 
         let args = taskArgs.args.split(',');
-        console.log(...args);
+ 
         contract = await CONTRACT.deploy(...args);
         deployTx = CONTRACT.getDeployTransaction(...args);
 

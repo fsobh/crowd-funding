@@ -16,8 +16,16 @@ async function main() {
 
     await hre.run('deployer');
     await hre.run('compile');
-    await hre.run('deploy', { contract: "Token", args:"5000000000" })
+    const address = await hre.run('deploy', { contract: "Token", args: "5000000000" })
+    
+    if (address) {
 
+       await hre.run('deploy', {
+				contract: 'ProjectFunder',
+				args: `${address}`,
+			});
+    }
+    
   } catch (error) {
 
     console.log(error)
