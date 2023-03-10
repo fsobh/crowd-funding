@@ -16,7 +16,7 @@ async function main() {
 
     await hre.run('deployer');
     await hre.run('compile');
-    await hre.run('deploy', { contract: "GTDS" })
+    await hre.run('deploy', { contract: "Token", args:"5000000000" })
 
   } catch (error) {
 

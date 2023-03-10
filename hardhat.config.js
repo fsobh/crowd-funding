@@ -74,13 +74,39 @@ task('deployer', "Shows all information about the account tied to the private ke
 task(
   'deploy',
   'Deploys specified contract and writes Prepared ABI to dedicated file',
-).addParam('contract', 'Name of the Contract you want to deploy').addOptionalParam("args", "array of args to pass into contract constructor")
+)
+  .addParam('contract', 'Name of the Contract you want to deploy')
+  .addOptionalParam(
+    'args',
+    'array of args to pass into contract constructor',
+  )
   .setAction(async (taskArgs, hre) => {
     try {
-      const CONTRACT = await hre.ethers.getContractFactory(taskArgs.contract);
-      const contract = await CONTRACT.deploy();
 
-      const deployTx = CONTRACT.getDeployTransaction();
+      const CONTRACT = await hre.ethers.getContractFactory(
+        taskArgs.contract,
+      );
+
+      //console.log(CONTRACT)
+      let contract;
+      let deployTx;
+
+      if (taskArgs.args) {
+
+        let args = taskArgs.args.split(',');
+        console.log(...args);
+        contract = await CONTRACT.deploy(...args);
+        deployTx = CONTRACT.getDeployTransaction(...args);
+
+      } else {
+
+        contract = await CONTRACT.deploy();
+        deployTx = CONTRACT.getDeployTransaction();
+
+      }
+
+
+      
       const estimatedGas = await CONTRACT.signer.estimateGas(deployTx);
       const gasPrice = await CONTRACT.signer.getGasPrice();
       const deploymentPriceWei = gasPrice.mul(estimatedGas);
@@ -101,23 +127,13 @@ task(
         chainData.currency,
       );
 
-
       console.log(
         '\x1b[36m',
-        `\n\t\t>_ ${taskArgs.contract} Contract is deploying...`
+        `\n\t\t>_ ${taskArgs.contract} Contract is deploying...`,
       );
 
 
-      let contractDeployed;
-
-      if (
-        taskArgs.args &&
-        Array.isArray(taskArgs.args) &&
-        taskArgs.args.length > 0
-      )
-        contractDeployed = await contract.deployed(...taskArgs.args);
-      else contractDeployed = await contract.deployed();
-
+      const contractDeployed = await contract.deployed();
       const contractAddress = contractDeployed.address;
 
       console.log(
@@ -157,9 +173,7 @@ task(
         `\n\t\t>_ Final Gas price paid :`,
         '\x1b[35m',
         `${ethers.utils.formatEther(
-          contractDeployed.deployTransaction.gasPrice
-            .mul(estimatedGas)
-
+          contractDeployed.deployTransaction.gasPrice.mul(estimatedGas),
         )}`,
         '\x1b[36m',
         `${chainData.currency}`,
@@ -173,10 +187,13 @@ task(
         '\x1b[36m',
         '(ctrl + click to view)',
       );
+
+      return contractAddress;
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   });
+
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more

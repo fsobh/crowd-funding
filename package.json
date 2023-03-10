@@ -1,8 +1,19 @@
 {
   "name": "hardhat-project",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "deploy:mumbai": "npx hardhat run --network mumbai scripts/deploy.js",
+    "deploy:mainnet": "npx hardhat run --network polygon_mainnet scripts/deploy.js",
+    "run:local:chain": "npx hardhat node",
+    "deploy:local": "npx hardhat run --network localhost scripts/deploy.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.5",
     "@openzeppelin/contracts": "^4.8.2",
+    "dotenv": "^16.0.3",
     "hardhat": "^2.13.0"
   }
 }
